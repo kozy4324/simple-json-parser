@@ -58,6 +58,8 @@ module Simple
       # 全てのトークンが処理済みかどうか
       def done? = @scan.eos? && @token.nil?
 
+      def to_s = @scan.inspect
+
       private
 
       def scan(with_advance) # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity

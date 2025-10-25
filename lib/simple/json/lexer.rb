@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "strscan"
 
 module Simple
@@ -26,16 +28,12 @@ module Simple
     # { "key" : | [ true, false ] }
     #         ^^^ (token => :COLON, peek => :LBRACKET, done? => false)
     #
-    # 最後の読み込み位置まで到達したら done? が true になる
+    # 最後の読み込み位置から advance を呼び出すと done? が true となる
     # { "key" : [ true, false ] | }
     #                         ^^^ (token => :RBRACKET, peek => :RCURLY, done? => false)
     # ↓
     # { "key" : [ true, false ] } |
-    #                           ^^^ (token => :RCURLY, peek => nil, done? => true)
-    #
-    # done? = true の状態で advance を呼び出すと token が nil となる
-    # { "key" : [ true, false ] } |
-    #                           ^^^ (token => :RCURLY, peek => nil, done? => true)
+    #                           ^^^ (token => :RCURLY, peek => nil, done? => false)
     # ↓
     # { "key" : [ true, false ] } |
     #                             ^ (token => nil, peek => nil, done? => true)
@@ -57,8 +55,8 @@ module Simple
       # 現在読み込み位置以降の連続するホワイトスペースを読み飛ばす
       def ignore_ws = @scan.skip(/\s+/)
 
-      # 全ての文字列を読み込み済みかどうか
-      def done? = @scan.eos?
+      # 全てのトークンが処理済みかどうか
+      def done? = @scan.eos? && @token.nil?
 
       private
 

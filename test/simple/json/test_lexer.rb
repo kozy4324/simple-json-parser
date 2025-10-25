@@ -28,10 +28,9 @@ module Simple
 
         lexer.advance
         # [ true, false ] |
-        assert_equal [:RBRACKET, nil, true], [lexer.token, lexer.peek, lexer.done?]
+        assert_equal [:RBRACKET, nil, false], [lexer.token, lexer.peek, lexer.done?]
 
         lexer.advance
-        # [ true, false ] |
         assert_equal [nil, nil, true], [lexer.token, lexer.peek, lexer.done?]
       end
     end

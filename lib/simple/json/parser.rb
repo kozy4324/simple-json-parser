@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "parser/version"
+require_relative "lexer"
 
 module Simple
   module Json

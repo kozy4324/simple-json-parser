@@ -38,16 +38,19 @@ module Simple
       private
 
       # value ::= object | array | string | number | "true" | "false" | "null"
-      def parse_value
+      def parse_value # rubocop:disable Metrics/MethodLength
         case @lexer.peek
+        when :LBRACKET
+          parse_array
         when :TRUE
           @lexer.advance # 'true'
           true
         when :FALSE
           @lexer.advance # 'false'
           false
-        when :LBRACKET
-          parse_array
+        when :NULL
+          @lexer.advance # 'null'
+          nil
         end
       end
 

@@ -67,6 +67,8 @@ module Simple
               :TRUE
             elsif @scan.scan_full("false", with_advance, true)
               :FALSE
+            elsif @scan.scan_full("null", with_advance, true)
+              :NULL
             elsif @scan.scan_full("{", with_advance, true)
               :LCURLY
             elsif @scan.scan_full("}", with_advance, true)

@@ -42,6 +42,10 @@ module Simple
         parse_and_assert %([[[]]])
         parse_and_assert %([true, [true, [false, []]]])
       end
+
+      def test_parse_null
+        parse_and_assert %(null)
+      end
     end
   end
 end

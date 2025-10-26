@@ -42,6 +42,8 @@ module Simple
         case @lexer.peek
         when :LBRACKET
           parse_array
+        when :QUOTE
+          parse_string
         when :TRUE
           @lexer.advance # 'true'
           true
@@ -100,9 +102,20 @@ module Simple
       end
 
       # string ::= '"' characters '"'
+      def parse_string
+        @lexer.advance # '"'
+        string = parse_characters
+        @lexer.advance # '"'
+        string
+      end
+
       # characters ::= "" | character characters
       # character ::= '0020' . '10FFFF' - '"' - '\' | '\' escape
       # escape ::= '"' | '\' | '/' | 'b' | 'f' | 'n' | 'r' | 't' | 'u' hex hex hex hex
+      def parse_characters
+        @lexer.string_value
+      end
+
       # hex ::= digit | 'A' . 'F' | 'a' . 'f'
       # number ::= integer | fraction | exponent
       # integer ::= digit | onenine digits | '-' digit | '-' onenine digits

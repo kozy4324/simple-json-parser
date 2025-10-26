@@ -58,6 +58,9 @@ module Simple
       # 全てのトークンが処理済みかどうか
       def done? = @scan.eos? && @token.nil?
 
+      # 現在読み込み位置以降の文字列値を取得して読み込み位置を進める、エスケープはまだ考慮できていない
+      def string_value = @scan.scan(/[^"]+/)
+
       def to_s = @scan.inspect
 
       private
@@ -81,6 +84,8 @@ module Simple
               :COLON
             elsif @scan.scan_full(",", with_advance, true)
               :COMMA
+            elsif @scan.scan_full('"', with_advance, true)
+              :QUOTE
             end
         @token = t if with_advance
         t

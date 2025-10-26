@@ -46,6 +46,10 @@ module Simple
       def test_parse_null
         parse_and_assert %(null)
       end
+
+      def test_parse_string_value
+        parse_and_assert %("string")
+      end
     end
   end
 end

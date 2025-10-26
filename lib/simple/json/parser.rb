@@ -40,6 +40,8 @@ module Simple
       # value ::= object | array | string | number | "true" | "false" | "null"
       def parse_value # rubocop:disable Metrics/MethodLength
         case @lexer.peek
+        when :LCURLY
+          parse_object
         when :LBRACKET
           parse_array
         when :QUOTE
@@ -57,16 +59,36 @@ module Simple
       end
 
       # object ::= '{' ws '}' | '{' members '}'
-      # def parse_object
-      # end
+      def parse_object
+        @lexer.advance # '{'
+        parse_ws
+        object = case @lexer.peek
+                 when :RCURLY
+                   {}
+                 else
+                   parse_members
+                 end
+        @lexer.advance # '}'
+        object
+      end
 
       # members ::= member | member ',' members
-      # def parse_members
-      # end
+      def parse_members
+        members = {}
+        members.merge! parse_member
+        @lexer.advance if @lexer.peek == :COMMA
+        members
+      end
 
       # member ::= ws string ws ':' element
-      # def parse_member
-      # end
+      def parse_member
+        parse_ws
+        key = parse_string
+        parse_ws
+        @lexer.advance # ':'
+        value = parse_element
+        { key => value }
+      end
 
       # array ::= '[' ws ']' | '[' elements ']'
       def parse_array
@@ -125,6 +147,7 @@ module Simple
       # fraction ::= "" | '.' digits
       # exponent "" | 'E' sign digits | 'e' sign digits
       # sign ::= "" | '+' | '-'
+
       # ws ::= "" | '0020' ws | '000A' ws | '000D' ws | '0009' ws
       def parse_ws
         @lexer.ignore_ws

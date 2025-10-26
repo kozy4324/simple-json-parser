@@ -44,11 +44,19 @@ module Simple
       end
 
       def test_parse_null
-        parse_and_assert %(null)
+        assert_nil JSON.parse(%(null))
       end
 
       def test_parse_string_value
         parse_and_assert %("string")
+      end
+
+      def test_parse_empty_object
+        parse_and_assert %({})
+      end
+
+      def test_parse_object_with_a_single_value
+        parse_and_assert %({"key1": "value"})
       end
     end
   end

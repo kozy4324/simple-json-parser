@@ -5,9 +5,14 @@ require "json"
 
 module Simple
   module Json
-    class TestParser < Minitest::Test
+    class TestParser < Minitest::Test # rubocop:disable Metrics/ClassLength
       def parse_and_assert(str)
         assert_equal JSON.parse(str), Parser.new(str).parse_json
+      end
+
+      def parse_and_assert_raises(str)
+        assert_raises { JSON.parse(str) }
+        assert_raises { Parser.new(str).parse_json }
       end
 
       def test_parse_true
@@ -95,6 +100,38 @@ module Simple
         parse_and_assert %(0.1e+2)
         parse_and_assert %(10.23E-3)
         parse_and_assert %(-4.560E0)
+      end
+
+      def test_parse_invalid_integer_number_value
+        parse_and_assert_raises %(+1)
+        parse_and_assert_raises %(2+)
+        parse_and_assert_raises %(--3)
+        parse_and_assert_raises %(E4)
+        parse_and_assert_raises %(e5)
+        parse_and_assert_raises %(.6)
+        parse_and_assert_raises %(07)
+        parse_and_assert_raises %(-08)
+      end
+
+      def test_parse_invalid_fraction_number_value
+        parse_and_assert_raises %(1.+)
+        parse_and_assert_raises %(2.-)
+        parse_and_assert_raises %(3..)
+        parse_and_assert_raises %(1.)
+        parse_and_assert_raises %(3.E)
+      end
+
+      def test_parse_invalid_exponent_number_value
+        parse_and_assert_raises %(1Ee)
+        parse_and_assert_raises %(2eE)
+        parse_and_assert_raises %(3E.)
+        parse_and_assert_raises %(4e1+)
+        parse_and_assert_raises %(5E2-)
+        parse_and_assert_raises %(6e+-)
+        parse_and_assert_raises %(7E-+)
+        parse_and_assert_raises %(2e)
+        parse_and_assert_raises %(5.2E+)
+        parse_and_assert_raises %(6.3e-)
       end
     end
   end

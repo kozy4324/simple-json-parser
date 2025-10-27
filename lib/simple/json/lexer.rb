@@ -84,8 +84,8 @@ module Simple
           when :integer
             raise "invalid number value." if c =~ /[+]/
             raise "invalid number value." if c =~ /-/ && integer_part != ""
-            raise "invalid number value." if c == /[Ee.]/ && integer_part == ""
-            raise "invalid number value." if c =~ /[0-9]/ && ["+0", "-0", "0"].include?(integer_part)
+            raise "invalid number value." if c =~ /[Ee.]/ && integer_part == ""
+            raise "invalid number value." if c =~ /[0-9]/ && ["0", "-0"].include?(integer_part)
 
             case c
             when "."
@@ -99,7 +99,6 @@ module Simple
             end
           when :fraction
             raise "invalid number value." if c =~ /[+-.]/
-            raise "invalid number value." if c == /[Ee]/ && fraction_part == "."
 
             case c
             when /[Ee]/
@@ -109,11 +108,15 @@ module Simple
               fraction_part << c
             end
           when :exponent
-            raise "invalid number value." if c == /[Ee.]/
+            raise "invalid number value." if c =~ /[Ee.]/
             raise "invalid number value." if c =~ /[+-]/ && exponent_part != "E"
 
             exponent_part << c
           end
+        end
+
+        if fraction_part == "." || exponent_part == "E" || exponent_part == "E+" || exponent_part == "E-"
+          raise "invalid number value."
         end
 
         "#{integer_part}#{fraction_part}#{exponent_part}".send(fraction_part || exponent_part ? :to_f : :to_i)

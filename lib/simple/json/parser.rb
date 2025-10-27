@@ -38,7 +38,7 @@ module Simple
       private
 
       # value ::= object | array | string | number | "true" | "false" | "null"
-      def parse_value # rubocop:disable Metrics/MethodLength
+      def parse_value # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity
         case @lexer.peek
         when :LCURLY
           parse_object
@@ -46,6 +46,8 @@ module Simple
           parse_array
         when :QUOTE
           parse_string
+        when :NUMBER
+          parse_number
         when :TRUE
           @lexer.advance # 'true'
           true
@@ -137,19 +139,22 @@ module Simple
       # characters ::= "" | character characters
       # character ::= '0020' . '10FFFF' - '"' - '\' | '\' escape
       # escape ::= '"' | '\' | '/' | 'b' | 'f' | 'n' | 'r' | 't' | 'u' hex hex hex hex
+      # hex ::= digit | 'A' . 'F' | 'a' . 'f'
       def parse_characters
         @lexer.string_value
       end
 
-      # hex ::= digit | 'A' . 'F' | 'a' . 'f'
       # number ::= integer | fraction | exponent
       # integer ::= digit | onenine digits | '-' digit | '-' onenine digits
       # digits ::= digit | digit digits
       # digit ::= '0' | onenine
       # onenine ::= '1' . '9'
       # fraction ::= "" | '.' digits
-      # exponent "" | 'E' sign digits | 'e' sign digits
+      # exponent ::= "" | 'E' sign digits | 'e' sign digits
       # sign ::= "" | '+' | '-'
+      def parse_number
+        @lexer.number_value
+      end
 
       # ws ::= "" | '0020' ws | '000A' ws | '000D' ws | '0009' ws
       def parse_ws

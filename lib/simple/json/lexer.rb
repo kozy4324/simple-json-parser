@@ -38,6 +38,16 @@ module Simple
     # { "key" : [ true, false ] } |
     #                             ^ (token => nil, peek => nil, done? => true)
     class Lexer
+      # number ::= integer | fraction | exponent
+      # integer ::= digit | onenine digits | '-' digit | '-' onenine digits
+      # digits ::= digit | digit digits
+      # digit ::= '0' | onenine
+      # onenine ::= '1' . '9'
+      # fraction ::= "" | '.' digits
+      # exponent ::= "" | 'E' sign digits | 'e' sign digits
+      # sign ::= "" | '+' | '-'
+      NUMBER_REGEXP = /[1-9]+/
+
       def initialize(string)
         @scan = StringScanner.new string
         @token = nil
@@ -60,6 +70,9 @@ module Simple
 
       # 現在読み込み位置以降の文字列値を取得して読み込み位置を進める、エスケープはまだ考慮できていない
       def string_value = @scan.scan(/[^"]+/)
+
+      # 現在読み込み位置以降の数値を取得して読み込み位置を進める
+      def number_value = @scan.scan(NUMBER_REGEXP).to_i
 
       def to_s = @scan.inspect
 
@@ -86,6 +99,8 @@ module Simple
               :COMMA
             elsif @scan.scan_full('"', with_advance, true)
               :QUOTE
+            elsif @scan.scan_full(NUMBER_REGEXP, with_advance, true)
+              :NUMBER
             end
         @token = t if with_advance
         t

@@ -66,6 +66,10 @@ module Simple
       def test_parse_nested_object
         parse_and_assert %({"key1": "value1", "key2": {"key3": [true, false]}})
       end
+
+      def test_parse_number_value
+        parse_and_assert %(123)
+      end
     end
   end
 end

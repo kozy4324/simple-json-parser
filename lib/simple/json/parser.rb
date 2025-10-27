@@ -144,7 +144,7 @@ module Simple
         @lexer.string_value
       end
 
-      # number ::= integer | fraction | exponent
+      # number ::= integer fraction exponent
       # integer ::= digit | onenine digits | '-' digit | '-' onenine digits
       # digits ::= digit | digit digits
       # digit ::= '0' | onenine

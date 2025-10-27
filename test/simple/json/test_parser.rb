@@ -62,6 +62,10 @@ module Simple
       def test_parse_object_with_multiple_values
         parse_and_assert %({"key1": "value1", "key2": "value2"})
       end
+
+      def test_parse_nested_object
+        parse_and_assert %({"key1": "value1", "key2": {"key3": [true, false]}})
+      end
     end
   end
 end

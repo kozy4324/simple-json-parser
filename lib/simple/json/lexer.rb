@@ -38,16 +38,6 @@ module Simple
     # { "key" : [ true, false ] } |
     #                             ^ (token => nil, peek => nil, done? => true)
     class Lexer
-      # number ::= integer fraction exponent
-      # integer ::= digit | onenine digits | '-' digit | '-' onenine digits
-      # digits ::= digit | digit digits
-      # digit ::= '0' | onenine
-      # onenine ::= '1' . '9'
-      # fraction ::= "" | '.' digits
-      # exponent ::= "" | 'E' sign digits | 'e' sign digits
-      # sign ::= "" | '+' | '-'
-      NUMBER_REGEXP = /[1-9]+/
-
       def initialize(string)
         @scan = StringScanner.new string
         @token = nil
@@ -71,8 +61,63 @@ module Simple
       # 現在読み込み位置以降の文字列値を取得して読み込み位置を進める、エスケープはまだ考慮できていない
       def string_value = @scan.scan(/[^"]+/)
 
+      # number ::= integer fraction exponent
+      # integer ::= digit | onenine digits | '-' digit | '-' onenine digits
+      # digits ::= digit | digit digits
+      # digit ::= '0' | onenine
+      # onenine ::= '1' . '9'
+      # fraction ::= "" | '.' digits
+      # exponent ::= "" | 'E' sign digits | 'e' sign digits
+      # sign ::= "" | '+' | '-'
+
+      # numberとして使える文字種の連続かどうかだけをチェックする正規表現
+      NUMBER_REGEXP = /[0-9+-Ee.]+/
+
       # 現在読み込み位置以降の数値を取得して読み込み位置を進める
-      def number_value = @scan.scan(NUMBER_REGEXP).to_i
+      def number_value # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
+        state = :integer
+        integer_part = +""
+        fraction_part = nil
+        exponent_part = nil
+        @scan.scan(NUMBER_REGEXP).chars.each do |c| # rubocop:disable Metrics/BlockLength
+          case state
+          when :integer
+            raise "invalid number value." if c =~ /[+]/
+            raise "invalid number value." if c =~ /-/ && integer_part != ""
+            raise "invalid number value." if c == /[Ee.]/ && integer_part == ""
+            raise "invalid number value." if c =~ /[0-9]/ && ["+0", "-0", "0"].include?(integer_part)
+
+            case c
+            when "."
+              state = :fraction
+              fraction_part = +"."
+            when /[Ee]/
+              state = :exponent
+              exponent_part = +"E"
+            else
+              integer_part << c
+            end
+          when :fraction
+            raise "invalid number value." if c =~ /[+-.]/
+            raise "invalid number value." if c == /[Ee]/ && fraction_part == "."
+
+            case c
+            when /[Ee]/
+              state = :exponent
+              exponent_part = +"E"
+            else
+              fraction_part << c
+            end
+          when :exponent
+            raise "invalid number value." if c == /[Ee.]/
+            raise "invalid number value." if c =~ /[+-]/ && exponent_part != "E"
+
+            exponent_part << c
+          end
+        end
+
+        "#{integer_part}#{fraction_part}#{exponent_part}".send(fraction_part || exponent_part ? :to_f : :to_i)
+      end
 
       def to_s = @scan.inspect
 

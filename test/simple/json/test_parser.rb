@@ -69,6 +69,32 @@ module Simple
 
       def test_parse_number_value
         parse_and_assert %(123)
+        parse_and_assert %(0)
+        parse_and_assert %(-1)
+        parse_and_assert %(-20)
+      end
+
+      def test_parse_number_with_fraction_value
+        parse_and_assert %(123.0)
+        parse_and_assert %(0.1)
+        parse_and_assert %(10.23)
+        parse_and_assert %(-4.560)
+      end
+
+      def test_parse_number_with_exponent_value
+        parse_and_assert %(123E0)
+        parse_and_assert %(123e1)
+        parse_and_assert %(0E+1)
+        parse_and_assert %(-2e+34)
+        parse_and_assert %(56e-7)
+        parse_and_assert %(-0e1000)
+      end
+
+      def test_parse_number_with_fraction_and_exponent_value
+        parse_and_assert %(123.0E1)
+        parse_and_assert %(0.1e+2)
+        parse_and_assert %(10.23E-3)
+        parse_and_assert %(-4.560E0)
       end
     end
   end

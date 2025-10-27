@@ -76,7 +76,10 @@ module Simple
       def parse_members
         members = {}
         members.merge! parse_member
-        @lexer.advance if @lexer.peek == :COMMA
+        if @lexer.peek == :COMMA
+          @lexer.advance
+          members.merge! parse_members
+        end
         members
       end
 

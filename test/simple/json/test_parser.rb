@@ -56,7 +56,11 @@ module Simple
       end
 
       def test_parse_object_with_a_single_value
-        parse_and_assert %({"key1": "value"})
+        parse_and_assert %({"key1": "value1"})
+      end
+
+      def test_parse_object_with_multiple_values
+        parse_and_assert %({"key1": "value1", "key2": "value2"})
       end
     end
   end

@@ -70,20 +70,15 @@ module Simple
       # exponent ::= "" | 'E' sign digits | 'e' sign digits
       # sign ::= "" | '+' | '-'
 
-      # numberとして使える文字種の連続かどうかだけをチェックする正規表現
-      NUMBER_REGEXP = /[0-9-][0-9+\-Ee.]*/
+      INTEGER_REGEXP  = /-?(?:0(?![0-9])|[1-9][0-9]*)/
+      FRACTION_REGEXP = /\.[0-9]+/
+      EXPONENT_REGEXP = /[Ee][+-]?[0-9]+/
+      NUMBER_REGEXP   = /(#{INTEGER_REGEXP})(#{FRACTION_REGEXP})?(#{EXPONENT_REGEXP})?/
 
       # 現在読み込み位置以降の数値を取得して読み込み位置を進める
       def number_value
-        integer_part = @scan.scan(/-?[0-9]+/).chars.each_with_object(+"") do |c, buf|
-          raise "invalid number value." if ["0", "-0"].include?(buf)
-
-          buf << c
-        end
-        fraction_part = @scan.scan(/\.[0-9]+/)
-        exponent_part = @scan.scan(/[Ee][+-]?[0-9]+/)
-
-        "#{integer_part}#{fraction_part}#{exponent_part}".send(fraction_part || exponent_part ? :to_f : :to_i)
+        str = @scan.scan(NUMBER_REGEXP)
+        /[.Ee]/ =~ str ? str.to_f : str.to_i
       end
 
       def to_s = @scan.inspect

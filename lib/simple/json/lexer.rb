@@ -71,53 +71,17 @@ module Simple
       # sign ::= "" | '+' | '-'
 
       # numberとして使える文字種の連続かどうかだけをチェックする正規表現
-      NUMBER_REGEXP = /[0-9-][0-9+-Ee.]*/
+      NUMBER_REGEXP = /[0-9-][0-9+\-Ee.]*/
 
       # 現在読み込み位置以降の数値を取得して読み込み位置を進める
-      def number_value # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
-        state = :integer
-        integer_part = +""
-        fraction_part = nil
-        exponent_part = nil
-        @scan.scan(NUMBER_REGEXP).chars.each do |c| # rubocop:disable Metrics/BlockLength
-          case state
-          when :integer
-            raise "invalid number value." if c =~ /[+]/
-            raise "invalid number value." if c =~ /-/ && integer_part != ""
-            raise "invalid number value." if c =~ /[Ee.]/ && integer_part == ""
-            raise "invalid number value." if c =~ /[0-9]/ && ["0", "-0"].include?(integer_part)
+      def number_value
+        integer_part = @scan.scan(/-?[0-9]+/).chars.each_with_object(+"") do |c, buf|
+          raise "invalid number value." if ["0", "-0"].include?(buf)
 
-            case c
-            when "."
-              state = :fraction
-              fraction_part = +"."
-            when /[Ee]/
-              state = :exponent
-              exponent_part = +"E"
-            else
-              integer_part << c
-            end
-          when :fraction
-            raise "invalid number value." if c =~ /[+-.]/
-
-            case c
-            when /[Ee]/
-              state = :exponent
-              exponent_part = +"E"
-            else
-              fraction_part << c
-            end
-          when :exponent
-            raise "invalid number value." if c =~ /[Ee.]/
-            raise "invalid number value." if c =~ /[+-]/ && exponent_part != "E"
-
-            exponent_part << c
-          end
+          buf << c
         end
-
-        if fraction_part == "." || exponent_part == "E" || exponent_part == "E+" || exponent_part == "E-"
-          raise "invalid number value."
-        end
+        fraction_part = @scan.scan(/\.[0-9]+/)
+        exponent_part = @scan.scan(/[Ee][+-]?[0-9]+/)
 
         "#{integer_part}#{fraction_part}#{exponent_part}".send(fraction_part || exponent_part ? :to_f : :to_i)
       end

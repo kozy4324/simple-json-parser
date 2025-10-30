@@ -25,14 +25,18 @@ module Simple
     #       該当文字列 =>   "{"      "key"    ":"     "["        "true" ","     "false" "]"        "}"
     #                                                                                 ^^^^^^^^^^
     #
-    class Parser
+    class Parser # rubocop:disable Metrics/ClassLength
       def initialize(string)
         @lexer = Lexer.new string
       end
 
       # json ::= element
       def parse_json
-        parse_element
+        v = parse_element
+        @lexer.advance
+        raise "invalid input." unless @lexer.done?
+
+        v
       end
 
       private

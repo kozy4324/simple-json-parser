@@ -71,7 +71,7 @@ module Simple
       # sign ::= "" | '+' | '-'
 
       # numberとして使える文字種の連続かどうかだけをチェックする正規表現
-      NUMBER_REGEXP = /[0-9+-Ee.]+/
+      NUMBER_REGEXP = /[0-9-][0-9+-Ee.]*/
 
       # 現在読み込み位置以降の数値を取得して読み込み位置を進める
       def number_value # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
@@ -126,7 +126,12 @@ module Simple
 
       private
 
-      def scan(with_advance) # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+      def scan(with_advance) # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/AbcSize
+        if @scan.eos?
+          @token = nil if with_advance
+          return
+        end
+
         t = if @scan.scan_full("true", with_advance, true)
               :TRUE
             elsif @scan.scan_full("false", with_advance, true)
@@ -149,6 +154,8 @@ module Simple
               :QUOTE
             elsif @scan.scan_full(NUMBER_REGEXP, with_advance, true)
               :NUMBER
+            else
+              raise "unexpected token: #{@scan.inspect}"
             end
         @token = t if with_advance
         t

@@ -69,17 +69,13 @@ module Simple
       # fraction ::= "" | '.' digits
       # exponent ::= "" | 'E' sign digits | 'e' sign digits
       # sign ::= "" | '+' | '-'
-
       INTEGER_REGEXP  = /-?(?:0(?![0-9])|[1-9][0-9]*)/
       FRACTION_REGEXP = /\.[0-9]+/
       EXPONENT_REGEXP = /[Ee][+-]?[0-9]+/
       NUMBER_REGEXP   = /(#{INTEGER_REGEXP})(#{FRACTION_REGEXP})?(#{EXPONENT_REGEXP})?/
 
       # 現在読み込み位置以降の数値を取得して読み込み位置を進める
-      def number_value
-        str = @scan.scan(NUMBER_REGEXP)
-        /[.Ee]/ =~ str ? str.to_f : str.to_i
-      end
+      def number_value = @scan.scan(NUMBER_REGEXP).then { |s| /[.Ee]/ =~ s ? s.to_f : s.to_i }
 
       def to_s = @scan.inspect
 

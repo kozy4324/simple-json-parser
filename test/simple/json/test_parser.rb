@@ -147,8 +147,15 @@ module Simple
       end
 
       def test_parse_string_includes_escape
+        # escape ::= '"' | '\' | '/' | 'b' | 'f' | 'n' | 'r' | 't' | 'u' hex hex hex hex
         parse_and_assert %("\\"")
         parse_and_assert %("\\\\")
+        parse_and_assert %("\\/")
+        parse_and_assert %("\\b")
+        parse_and_assert %("\\f")
+        parse_and_assert %("\\n")
+        parse_and_assert %("\\r")
+        parse_and_assert %("\\t")
       end
     end
   end

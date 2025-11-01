@@ -63,16 +63,34 @@ module Simple
       # character ::= '0020' . '10FFFF' - '"' - '\' | '\' escape
       # escape ::= '"' | '\' | '/' | 'b' | 'f' | 'n' | 'r' | 't' | 'u' hex hex hex hex
       # hex ::= digit | 'A' . 'F' | 'a' . 'f'
-      # 現在読み込み位置以降の文字列値を取得して読み込み位置を進める、エスケープは一部文字種だけ考慮
-      def string_value
+      # 現在読み込み位置以降の文字列値を取得して読み込み位置を進める
+      def string_value # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity
         string = +""
         @scan.getch # "
         until (c = @scan.getch) == '"'
           if c == "\\"
-            c = @scan.getch
-            raise "invalid character sequence. #{c}:#{c.ord}" unless [34, 92].include? c.ord
+            c = @scan.getch # escape
+            case c.ord
+            when 34 # "
+              string << '"'
+            when 92 # \
+              string << "\\"
+            when 47 # /
+              string << c
+            when 98 # b
+              string << 8.chr # BS
+            when 102 # f
+              string << 12.chr # FF
+            when 110 # n
+              string << 10.chr # LF
+            when 114 # r
+              string << 13.chr # CR
+            when 116 # t
+              string << 9.chr # HT
+            end
+          else
+            string << c
           end
-          string << c
         end
         string
       end

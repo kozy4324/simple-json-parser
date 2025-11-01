@@ -25,7 +25,7 @@ module Simple
     #       該当文字列 =>   "{"      "key"    ":"     "["        "true" ","     "false" "]"        "}"
     #                                                                                 ^^^^^^^^^^
     #
-    class Parser # rubocop:disable Metrics/ClassLength
+    class Parser
       def initialize(string)
         @lexer = Lexer.new string
       end
@@ -133,18 +133,11 @@ module Simple
       end
 
       # string ::= '"' characters '"'
-      def parse_string
-        @lexer.advance # '"'
-        string = parse_characters
-        @lexer.advance # '"'
-        string
-      end
-
       # characters ::= "" | character characters
       # character ::= '0020' . '10FFFF' - '"' - '\' | '\' escape
       # escape ::= '"' | '\' | '/' | 'b' | 'f' | 'n' | 'r' | 't' | 'u' hex hex hex hex
       # hex ::= digit | 'A' . 'F' | 'a' . 'f'
-      def parse_characters
+      def parse_string
         @lexer.string_value
       end
 

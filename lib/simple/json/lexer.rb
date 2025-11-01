@@ -58,8 +58,18 @@ module Simple
       # 全てのトークンが処理済みかどうか
       def done? = @scan.eos? && @token.nil?
 
+      # string ::= '"' characters '"'
+      # characters ::= "" | character characters
+      # character ::= '0020' . '10FFFF' - '"' - '\' | '\' escape
+      # escape ::= '"' | '\' | '/' | 'b' | 'f' | 'n' | 'r' | 't' | 'u' hex hex hex hex
+      # hex ::= digit | 'A' . 'F' | 'a' . 'f'
       # 現在読み込み位置以降の文字列値を取得して読み込み位置を進める、エスケープはまだ考慮できていない
-      def string_value = @scan.scan(/[^"]+/)
+      def string_value
+        @scan.scan('"')
+        v = @scan.scan(/[^"]*/)
+        @scan.scan('"')
+        v
+      end
 
       # number ::= integer fraction exponent
       # integer ::= digit | onenine digits | '-' digit | '-' onenine digits

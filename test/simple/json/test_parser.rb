@@ -157,6 +157,12 @@ module Simple
         parse_and_assert %("\\r")
         parse_and_assert %("\\t")
       end
+
+      def test_parse_string_includes_unicode_escape_sequence
+        # escape ::= '"' | '\' | '/' | 'b' | 'f' | 'n' | 'r' | 't' | 'u' hex hex hex hex
+        # hex ::= digit | 'A' . 'F' | 'a' . 'f'
+        parse_and_assert %("\\u30b8\\u30A7\\u30a4\\u30BD\\u30f3")
+      end
     end
   end
 end

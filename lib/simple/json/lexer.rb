@@ -83,6 +83,9 @@ module Simple
               string << 13.chr # CR
             when 116 # t
               string << 9.chr # HT
+            when 117 # u
+              hex4 = @scan.scan(/[0-9a-fA-F]{4}/)
+              string << hex4.to_i(16).chr(Encoding::UTF_8)
             end
           else
             string << c

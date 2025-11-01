@@ -69,6 +69,7 @@ module Simple
         @scan.getch # "
         until (c = @scan.getch) == '"'
           raise "unexpected end of input." if c.nil?
+          raise "invalid ASCII control character in string." if c.ord < 20
 
           if c == "\\"
             c = @scan.getch # escape

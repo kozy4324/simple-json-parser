@@ -164,8 +164,12 @@ module Simple
         parse_and_assert %("\\u30b8\\u30A7\\u30a4\\u30BD\\u30f3")
       end
 
-      def test_parse_string_unclosed
+      def test_parse_string_with_unclosed_string
         parse_and_assert_raises %("abc)
+      end
+
+      def test_parse_string_with_invalid_ascii_control_character
+        parse_and_assert_raises %("#{7.chr}")
       end
     end
   end

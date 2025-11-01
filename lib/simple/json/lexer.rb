@@ -70,7 +70,7 @@ module Simple
         until (c = @scan.getch) == '"'
           if c == "\\"
             c = @scan.getch
-            raise "invalid character sequence." unless %w[" \\].include? c
+            raise "invalid character sequence. #{c}:#{c.ord}" unless [34, 92].include? c.ord
           end
           string << c
         end

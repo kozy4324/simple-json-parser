@@ -147,8 +147,8 @@ module Simple
       end
 
       def test_parse_string_includes_escape
-        parse_and_assert %("abc\\"def")
-        parse_and_assert %("abc\\\\def")
+        parse_and_assert %("\\"")
+        parse_and_assert %("\\\\")
       end
     end
   end

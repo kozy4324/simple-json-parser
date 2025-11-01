@@ -63,12 +63,18 @@ module Simple
       # character ::= '0020' . '10FFFF' - '"' - '\' | '\' escape
       # escape ::= '"' | '\' | '/' | 'b' | 'f' | 'n' | 'r' | 't' | 'u' hex hex hex hex
       # hex ::= digit | 'A' . 'F' | 'a' . 'f'
-      # 現在読み込み位置以降の文字列値を取得して読み込み位置を進める、エスケープはまだ考慮できていない
+      # 現在読み込み位置以降の文字列値を取得して読み込み位置を進める、エスケープは一部文字種だけ考慮
       def string_value
-        @scan.scan('"')
-        v = @scan.scan(/[^"]*/)
-        @scan.scan('"')
-        v
+        string = +""
+        @scan.getch # "
+        until (c = @scan.getch) == '"'
+          if c == "\\"
+            c = @scan.getch
+            raise "invalid character sequence." unless %w[" \\].include? c
+          end
+          string << c
+        end
+        string
       end
 
       # number ::= integer fraction exponent

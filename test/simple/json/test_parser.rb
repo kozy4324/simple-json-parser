@@ -145,6 +145,11 @@ module Simple
       def test_parse_string_includes_multibyte_chars
         parse_and_assert %("文字列")
       end
+
+      def test_parse_string_includes_escape
+        parse_and_assert %("abc\\"def")
+        parse_and_assert %("abc\\\\def")
+      end
     end
   end
 end

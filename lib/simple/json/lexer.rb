@@ -71,11 +71,7 @@ module Simple
           if c == "\\"
             c = @scan.getch # escape
             case c.ord
-            when 34 # "
-              string << '"'
-            when 92 # \
-              string << "\\"
-            when 47 # /
+            when 34, 92, 47 # " \ /
               string << c
             when 98 # b
               string << 8.chr # BS

@@ -133,6 +133,18 @@ module Simple
         parse_and_assert_raises %(5.2E+)
         parse_and_assert_raises %(6.3e-)
       end
+
+      def test_parse_plain_string
+        parse_and_assert %("abc")
+      end
+
+      def test_parse_empty_string
+        parse_and_assert %("")
+      end
+
+      def test_parse_string_includes_multibyte_chars
+        parse_and_assert %("文字列")
+      end
     end
   end
 end

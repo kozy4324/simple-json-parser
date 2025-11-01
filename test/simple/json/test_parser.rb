@@ -163,6 +163,10 @@ module Simple
         # hex ::= digit | 'A' . 'F' | 'a' . 'f'
         parse_and_assert %("\\u30b8\\u30A7\\u30a4\\u30BD\\u30f3")
       end
+
+      def test_parse_string_unclosed
+        parse_and_assert_raises %("abc)
+      end
     end
   end
 end

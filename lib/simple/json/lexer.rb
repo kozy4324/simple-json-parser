@@ -68,6 +68,8 @@ module Simple
         string = +""
         @scan.getch # "
         until (c = @scan.getch) == '"'
+          raise "unexpected end of input." if c.nil?
+
           if c == "\\"
             c = @scan.getch # escape
             case c.ord

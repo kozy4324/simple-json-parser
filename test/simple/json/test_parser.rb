@@ -171,6 +171,10 @@ module Simple
       def test_parse_string_with_invalid_ascii_control_character
         parse_and_assert_raises %("#{7.chr}")
       end
+
+      def test_parse_string_with_invalid_escape_character
+        parse_and_assert %("\\q")
+      end
     end
   end
 end

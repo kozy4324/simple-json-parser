@@ -89,6 +89,9 @@ module Simple
             when 117 # u
               hex4 = @scan.scan(/[0-9a-fA-F]{4}/)
               string << hex4.to_i(16).chr(Encoding::UTF_8)
+            else # rubocop:disable Lint/DuplicateBranch
+              # JSON仕様上は許可されないescape文字だがJSON.parseでは無視する振る舞いなのでそれに合わせる
+              string << c
             end
           else
             string << c
